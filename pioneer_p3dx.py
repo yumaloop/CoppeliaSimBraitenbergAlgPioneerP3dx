@@ -48,10 +48,9 @@ class Pioneer_p3dx:
         maxDetectionDist = 0.2
         detect = np.zeros(self.N_ULT_SENSOR)
         braitenbergL = [-0.2, -0.4, -0.6, -0.8, -1.0, -1.2, -1.4, -1.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        braitenbergR = [-1.6, -1.4, -1.2, -1.0, -0.8, -0.6, -0.4, -0.2, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-        # braitenbergR = [ 1.6,  1.4,  1.2,  1.0,  0.8,  0.6,  0.4,  0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        braitenbergR = [-1.6, -1.4, -1.2, -1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-        # start actuation loop 
+        # Start actuation loop 
         startTime = time.time()
         while time.time() - startTime < duration:
             for i in range(self.N_ULT_SENSOR):
@@ -85,12 +84,12 @@ class Pioneer_p3dx:
                 vRight = vRight + braitenbergR[i] * detect[i]
 
             _ = sim.simxSetJointTargetVelocity(
-                self.clientID, self.motorLeft, vLeft, sim.simx_opmode_blocking
-                # self.clientID, self.motorLeft, vLeft, sim.simx_opmode_oneshot
+                # self.clientID, self.motorLeft, vLeft, sim.simx_opmode_blocking
+                self.clientID, self.motorLeft, vLeft, sim.simx_opmode_oneshot
             )
             _ = sim.simxSetJointTargetVelocity(
-                self.clientID, self.motorRight, vRight, sim.simx_opmode_blocking
-                # self.clientID, self.motorRight, vRight, sim.simx_opmode_oneshot
+                # self.clientID, self.motorRight, vRight, sim.simx_opmode_blocking
+                self.clientID, self.motorRight, vRight, sim.simx_opmode_oneshot
             )
 
 
