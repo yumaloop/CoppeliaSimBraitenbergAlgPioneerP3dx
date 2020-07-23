@@ -48,8 +48,8 @@ class Pioneer_p3dx:
         maxDetectionDist = 0.2
         detect = np.zeros(self.N_ULT_SENSOR)
         braitenbergL = [-0.2, -0.4, -0.6, -0.8, -1.0, -1.2, -1.4, -1.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        braitenbergR = [ 1.6,  1.4,  1.2,  1.0,  0.8,  0.6,  0.4,  0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        # braitenbergR = [-1 * x for x in braitenbergL]
+        braitenbergR = [-1.6, -1.4, -1.2, -1.0, -0.8, -0.6, -0.4, -0.2, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        # braitenbergR = [ 1.6,  1.4,  1.2,  1.0,  0.8,  0.6,  0.4,  0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
         # start actuation loop 
         startTime = time.time()
@@ -85,10 +85,12 @@ class Pioneer_p3dx:
                 vRight = vRight + braitenbergR[i] * detect[i]
 
             _ = sim.simxSetJointTargetVelocity(
-                self.clientID, self.motorLeft, vLeft, sim.simx_opmode_oneshot
+                self.clientID, self.motorLeft, vLeft, sim.simx_opmode_blocking
+                # self.clientID, self.motorLeft, vLeft, sim.simx_opmode_oneshot
             )
             _ = sim.simxSetJointTargetVelocity(
-                self.clientID, self.motorRight, vRight, sim.simx_opmode_oneshot
+                self.clientID, self.motorRight, vRight, sim.simx_opmode_blocking
+                # self.clientID, self.motorRight, vRight, sim.simx_opmode_oneshot
             )
 
 
@@ -108,14 +110,13 @@ def main():
 
         if res == sim.simx_return_ok:
             print("Number of objects in the scene: ", len(objs))
+            print("Client ID: ", clientID)
         else:
             print("Remote API function call returned with error code: ", res)
             sys.exit("Could not connect")
 
-        time.sleep(2)
-
-        pioneer_p3dx = Pioneer_p3dx(clientID)
-        pioneer_p3dx.actuation_sample()
+        pioneerRob = Pioneer_p3dx(clientID)
+        pioneerRob.actuation_sample()
 
         """
         err_code, l_motor_handle = sim.simxGetObjectHandle(clientID, "Pioneer_p3dx_leftMotor",  sim.simx_opmode_blocking)
@@ -137,14 +138,6 @@ def main():
         err_code = sim.simxSetJointTargetVelocity(clientID, r_motor_handle,  1.0, sim.simx_opmode_streaming)
         time.sleep(2)
         """
-
-        # Now send some data to CoppeliaSim in a non-blocking fashion:
-        sim.simxAddStatusbarMessage(
-            clientID, "Hello CoppeliaSim!", sim.simx_opmode_oneshot
-        )
-
-        # Before closing the connection to CoppeliaSim, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
-        sim.simxGetPingTime(clientID)
 
         # Now close the connection to CoppeliaSim:
         sim.simxFinish(clientID)
